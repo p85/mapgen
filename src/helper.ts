@@ -15,10 +15,14 @@ export interface mystruct {
 }
 
 export type TOs = 'BSD'|'BBS'|'IBM'|'MIL'|'Dynix'|'ATT'|'Ultrix'|'VMS'|'SunOS'|'HP-UX'|'Xenix'|'SysV'|'AIX'|'MACH'|'AUX'|'OSES'|'WOPR'|'SECOS'|'RELIC'|'TEL/OS'|'ENCOM';
-export interface polygonStruct { os: TOs, color: string, shape: string | null, fontcolor?: string, img?: string }
+export interface polygonStruct {
+  os: TOs,
+  color: string,            // Colornames in Sub Section SVG: https://www.graphviz.org/doc/info/colors.html
+  shape: string | null,     // Shapes: https://www.graphviz.org/doc/info/shapes.html
+  fontcolor?: string,       // Colornames in Sub Section SVG: https://www.graphviz.org/doc/info/colors.html
+  img?: string              // relative Path to Image
+}
 
-// Colornames in Sub Section SVG: https://www.graphviz.org/doc/info/colors.html
-// Shapes: https://www.graphviz.org/doc/info/shapes.html
 export const polygons: polygonStruct[] = [
   {os: 'BSD', color: 'indianred', shape: 'box'},
   {os: 'BBS', color: 'ivory', shape: 'polygon'},
@@ -73,5 +77,21 @@ export class Helper {
 
   public getColorShape(os: TOs): polygonStruct | undefined {
     return polygons.find(poly => poly.os === os);
+  }
+
+  public getNodeOptionsForColors(os: TOs): string {
+    const shape = this.getColorShape(os);
+    return shape ? `style="filled" fillcolor="${shape.color}" fontcolor="${shape.fontcolor ? shape.fontcolor : 'white'}" shape="${shape.shape}" ` : ``;
+  }
+  
+  public getNodeOptionsForImage(os: TOs): string {
+    const shape = this.getColorShape(os);
+    if (shape && shape.img && fs.existsSync(shape.img)) {
+      return `image="${shape.img}", width="1" height="1" fixedsize=true label="${os}" fontcolor="${shape.fontcolor ? shape.fontcolor : 'white'}" `;
+    } else if (shape && shape.img && !fs.existsSync(shape.img)) {
+      console.error(`Image File ${shape.img} not found for OS: ${os}!`);
+      process.exit(1);
+    }
+    return '';
   }
 }
