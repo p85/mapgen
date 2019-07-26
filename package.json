@@ -1,7 +1,7 @@
 {
-  "name": "map",
-  "version": "0.1.0",
-  "description": "",
+  "name": "mapgen",
+  "version": "0.2.0",
+  "description": "th network map generator",
   "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
