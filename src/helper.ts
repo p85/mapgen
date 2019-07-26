@@ -28,7 +28,7 @@ export const polygons: polygonStruct[] = [
   {os: 'BBS', color: 'ivory', shape: 'polygon'},
   {os: 'IBM', color: 'lightskyblue', shape: 'ellipse'},
   {os: 'MIL', color: 'magenta', shape: 'pentagon', fontcolor: 'white'},
-  {os: 'Dynix', color: 'yellowgreen', shape: 'oval'},
+  {os: 'Dynix', color: 'yellowgreen', shape: 'oval', img: './node_images/freebsd-seeklogo.com.svg'},
   {os: 'ATT', color: 'wheat', shape: 'circle'},
   {os: 'Ultrix', color: 'darkturquoise', shape: 'egg'},
   {os: 'VMS', color: 'silver', shape: 'triangle'},
@@ -50,6 +50,7 @@ export const polygons: polygonStruct[] = [
 export const UNKNOWNHOST = `[UNKNOWN_HOST_%%NUM%%]`;
 export const NONETWORKCONNECTIONS = `[NO_NETWORK_CONNECTIONS]`;
 export const UNKNOWN = '?';
+export const DEFAULTFONTCOLOR = 'black';
 
 export class Helper {
   protected readonly hrstart = process.hrtime();
@@ -82,13 +83,13 @@ export class Helper {
 
   public getNodeOptionsForColors(os: TOs): string {
     const shape = this.getColorShape(os);
-    return shape ? `style="filled" fillcolor="${shape.color}" fontcolor="${shape.fontcolor ? shape.fontcolor : 'white'}" shape="${shape.shape}" ` : ``;
+    return shape ? `style="filled" fillcolor="${shape.color}" fontcolor="${shape.fontcolor ? shape.fontcolor : DEFAULTFONTCOLOR}" shape="${shape.shape}" ` : ``;
   }
   
   public getNodeOptionsForImage(os: TOs): string {
     const shape = this.getColorShape(os);
     if (shape && shape.img && fs.existsSync(shape.img)) {
-      return `image="${shape.img}", width="1" height="1" fixedsize=true fontcolor="${shape.fontcolor ? shape.fontcolor : 'white'}" `;
+      return `image="${shape.img}", width="1" height="1" fixedsize=true fontcolor="${shape.fontcolor ? shape.fontcolor : DEFAULTFONTCOLOR}" `;
     } else if (shape && shape.img && !fs.existsSync(shape.img)) {
       console.error(`Image File ${shape.img} not found for OS: ${os}!`);
       process.exit(1);
@@ -96,7 +97,7 @@ export class Helper {
     return '';
   }
 
-  public getLabelForNodeOptions(hostname: string, os: TOs, connections: number): string {
+  public getLabelForNodeOptions(hostname: string, os: TOs, connections: string): string {
     return `label="${hostname}\\n${os}\\nConnections: ${connections}"`;
   }
 }
