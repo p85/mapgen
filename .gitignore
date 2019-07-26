@@ -1,0 +1,7 @@
+node_modules
+dist
+_fin
+**/*.dot
+**/*.svg
+out.json
+**/*.jsonl
