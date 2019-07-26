@@ -15,7 +15,7 @@ export interface mystruct {
 }
 
 export type TOs = 'BSD'|'BBS'|'IBM'|'MIL'|'Dynix'|'ATT'|'Ultrix'|'VMS'|'SunOS'|'HP-UX'|'Xenix'|'SysV'|'AIX'|'MACH'|'AUX'|'OSES'|'WOPR'|'SECOS'|'RELIC'|'TEL/OS'|'ENCOM';
-export interface polygonStruct { os: TOs, color: string, shape: string | null, fontcolor?: string }
+export interface polygonStruct { os: TOs, color: string, shape: string | null, fontcolor?: string, img?: string }
 
 // Colornames in Sub Section SVG: https://www.graphviz.org/doc/info/colors.html
 // Shapes: https://www.graphviz.org/doc/info/shapes.html
