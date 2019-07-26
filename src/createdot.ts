@@ -5,31 +5,11 @@ import * as cliprogress from 'cli-progress';
 
 
 const argv = yargs
-  .option('i', {
-    alias: 'inputfile',
-    describe: 'Input JSON File, prior generated with createtmpjson.js',
-    type: 'string',
-    demand: true,
-  })
-  .option('o', {
-    alias: 'outputfile',
-    describe: 'Output DOT File',
-    type: 'string',
-    demand: true
-  }).option('f', {
-    alias: 'forceOverwrite',
-    describe: 'Force Overwrite existing DOT File',
-    type: 'boolean',
-    demand: false,
-    default: false
-  })
-  .option('c', {
-    alias: 'colors',
-    describe: 'Enable Colors and Shapes',
-    type: 'boolean',
-    demand: 'false',
-    default: false
-  })
+  .option('i', {alias: 'inputfile', describe: 'Input JSON File, prior generated with createtmpjson.js', type: 'string', demand: true})
+  .option('o', {alias: 'outputfile', describe: 'Output DOT File', type: 'string', demand: true})
+  .option('f', {alias: 'forceOverwrite', describe: 'Force Overwrite existing DOT File', type: 'boolean', demand: false, default: false})
+  .option('c', {alias: 'colors', describe: 'Enable Colors and Shapes', type: 'boolean', demand: false, default: false})
+  .option('img', {alias: 'useImage', describe: 'Render Images ontop of Nodes', type: 'boolean', demand: false, default: false})
   .argv;
 
 const inputfile = argv.i;
