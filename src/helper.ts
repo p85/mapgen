@@ -15,6 +15,7 @@ export interface mystruct {
 }
 
 export const UNKNOWNHOST = `[UNKNOWN_HOST_%%NUM%%]`;
+export const NONETWORKCONNECTIONS = `[NO_NETWORK_CONNECTIONS]`;
 
 export class Helper {
   protected readonly hrstart = process.hrtime();
@@ -24,9 +25,9 @@ export class Helper {
     return fs.existsSync(filename);
   }
 
-  public getRunTime(): {secs: number, ms: number} {
+  public getRunTime(): string {
     const hrend = process.hrtime(this.hrstart);
-    return {secs: hrend[0], ms: hrend[1] / 1000000};
+    return `runtime: ${hrend[0]}s ${hrend[1] / 1000000}ms`;
   }
 
   public isValidJSON(str: string): boolean {
@@ -35,5 +36,9 @@ export class Helper {
     } catch (e) {
       return false;
     }
+  }
+
+  public writeOut(filename: string, data: string): void {
+    fs.appendFileSync(filename, data);
   }
 }

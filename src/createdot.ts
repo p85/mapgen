@@ -1,23 +1,57 @@
 import * as fs from 'fs';
+import * as yargs from 'yargs';
+import { mystruct, Helper, NONETWORKCONNECTIONS } from './helper';
+import * as cliprogress from 'cli-progress';
 
-interface mystruct {
-  hostname: string;
-  os: string;
-  routes: string[];
+
+const argv = yargs
+  .option('i', {
+    alias: 'inputfile',
+    describe: 'Input JSON File, prior generated with createtmpjson.js',
+    type: 'string',
+    demand: true,
+  })
+  .option('o', {
+    alias: 'outputfile',
+    describe: 'Output DOT File',
+    type: 'string',
+    demand: true
+  }).option('f', {
+    alias: 'Force overwrite',
+    describe: 'Force Overwrite existing DOT File',
+    type: 'boolean',
+    demand: false,
+    default: false
+  })
+  .argv;
+
+const inputfile = argv.i;
+const outputfile = argv.o;
+const forceOverwrite = argv.f;
+const helperFn = new Helper();
+const data: mystruct[] = JSON.parse(fs.readFileSync(inputfile).toString());
+const bar = new cliprogress.Bar({}, cliprogress.Presets.shades_classic);
+
+
+if (!helperFn.fileExists(inputfile)) {
+  console.error(`Input-File ${inputfile} does not exist!`);
+  process.exit(1);
 }
 
-const data: mystruct[] = JSON.parse(fs.readFileSync('out.json').toString());
-const outfile: string = 'out.dot';
-
-if (fs.existsSync(outfile)) fs.unlinkSync(outfile);
-
-function writeOut(data: string): void {
-  fs.appendFileSync(outfile, data);
+if (helperFn.fileExists(outputfile) && !forceOverwrite) {
+  console.error(`Output-File ${outputfile} already exists! If you want to overwrite, consider using the -f option`);
+  process.exit(1);
+} else if(helperFn.fileExists(outputfile) && forceOverwrite) {
+  fs.unlinkSync(outputfile)
 }
 
-console.log(data.length);
+console.info(`started generating dot-file...`);
+console.info(`Inputfile: ${inputfile}`);
+console.info(`Outputfile: ${outputfile}`);
+console.info(`Have Records: ${data.length}`);
+bar.start(data.length, 0);
 
-writeOut('digraph Closet{\n');
+helperFn.writeOut(outputfile, `digraph Closet{\n`);
 for (let i = 0; i < data.length; i++) {
   const currentHost: mystruct = data[i];
   let output = `"${currentHost.hostname}" -> {`
@@ -27,27 +61,15 @@ for (let i = 0; i < data.length; i++) {
       output += `"${routeName}" `;
     }
   } else {
-    output += `"[NO_NETWORK_CONNECTIONS]" `;
+    output += `"${NONETWORKCONNECTIONS}" `;
   }
   output = output.slice(0, output.length - 1);
   output += '};\n';
-  writeOut(output);
+  helperFn.writeOut(outputfile, output);
+  bar.increment(1);
 }
 
-writeOut('}\n');
-console.log('done');
-
-// data.forEach((item: mystruct, index: number) => {
-//   const currentHost: mystruct = item;
-//   let output = `"${currentHost.hostname}" -> {`
-//   if (currentHost.routes.length > 0) {
-//     for (let ii = 0; ii < currentHost.routes.length; i++) {
-//       const routeName = currentHost.routes[ii];
-//       output += routeName + ' ';
-//     }
-//   } else {
-//     output += `[UNKNOWN_${index}] `;
-//   }
-//   output += '}\n';
-//   console.log(i);
-// });
+bar.stop();
+helperFn.writeOut(outputfile, '}\n');
+console.info(`successfully wrote dot file ${outputfile}`);
+console.info(helperFn.getRunTime());

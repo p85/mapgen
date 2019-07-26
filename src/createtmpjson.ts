@@ -52,6 +52,7 @@ if (helperFn.fileExists(outputfile) && !forceOverwrite) {
   process.exit(1);
 }
 
+console.info(`started generating json file...`);
 console.info(`Inputfile: ${inputfile}`);
 console.info(`Outputfile: ${outputfile}`);
 
@@ -86,9 +87,6 @@ for (let i = 0; i < jsonlines.length; i++) {
 }
 
 fs.writeFileSync(outputfile, JSON.stringify(my, null, prettyPrint));
-
 bar.stop();
 console.info(`successfully wrote json file ${outputfile}`);
-const runtime = helperFn.getRunTime();
-
-console.info(`runtime: ${runtime.secs}s ${runtime.ms}ms`);
+console.info(helperFn.getRunTime());
