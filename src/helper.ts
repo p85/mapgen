@@ -42,13 +42,14 @@ export const polygons: polygonStruct[] = [
   {os: 'OSES', color: 'lightsteelblue', shape: 'invhouse'},
   {os: 'WOPR', color: 'crimson', shape: 'doublecircle', fontcolor: 'white'},
   {os: 'SECOS', color: 'fuchsia', shape: 'hexagon'},
-  {os: 'RELIC', color: 'deeppink', shape: 'star'},
+  {os: 'RELIC', color: 'deeppink', shape: 'star', fontcolor: 'black'},
   {os: 'TEL/OS', color: 'lawngreen', shape: 'tripleoctagon'},
-  {os: 'ENCOM', color: 'purple', shape: 'Msquare'}
+  {os: 'ENCOM', color: 'purple', shape: 'Msquare', fontcolor: 'black'}
 ];
 
 export const UNKNOWNHOST = `[UNKNOWN_HOST_%%NUM%%]`;
 export const NONETWORKCONNECTIONS = `[NO_NETWORK_CONNECTIONS]`;
+export const UNKNOWN = '?';
 
 export class Helper {
   protected readonly hrstart = process.hrtime();
@@ -87,11 +88,15 @@ export class Helper {
   public getNodeOptionsForImage(os: TOs): string {
     const shape = this.getColorShape(os);
     if (shape && shape.img && fs.existsSync(shape.img)) {
-      return `image="${shape.img}", width="1" height="1" fixedsize=true label="${os}" fontcolor="${shape.fontcolor ? shape.fontcolor : 'white'}" `;
+      return `image="${shape.img}", width="1" height="1" fixedsize=true fontcolor="${shape.fontcolor ? shape.fontcolor : 'white'}" `;
     } else if (shape && shape.img && !fs.existsSync(shape.img)) {
       console.error(`Image File ${shape.img} not found for OS: ${os}!`);
       process.exit(1);
     }
     return '';
+  }
+
+  public getLabelForNodeOptions(hostname: string, os: TOs, connections: number): string {
+    return `label="${hostname}\\n${os}\\nConnections: ${connections}"`;
   }
 }

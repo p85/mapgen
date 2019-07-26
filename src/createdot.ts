@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as yargs from 'yargs';
-import { mystruct, Helper, NONETWORKCONNECTIONS, TOs } from './helper';
+import { mystruct, Helper, NONETWORKCONNECTIONS, UNKNOWN } from './helper';
 import * as cliprogress from 'cli-progress';
 
 
@@ -62,10 +62,20 @@ for (let i = 0; i < data.length; i++) {
           nodeOptions += helperFn.getNodeOptionsForImage(osForRoute);
         }
         if (nodeOptions !== "[") {
-          nodeOptions = nodeOptions.slice(0, nodeOptions.length - 1);
+          const routeHost = data.filter(d => d.hostname === routeName);
+          osForRoute = routeHost && routeHost[0].os ? routeHost[0].os : UNKNOWN;
+          const connsForRoute = routeHost[0].routes.length;
+          nodeOptions += ` ${helperFn.getLabelForNodeOptions(routeName, osForRoute, connsForRoute)}`;
           nodeOptions += '] ';
           output += nodeOptions;
         }
+      } else {
+        let osForRoute: any = data.filter(d => d.hostname === routeName);
+        osForRoute = osForRoute && osForRoute[0].os ? osForRoute[0].os : UNKNOWN;
+        let connsForRoute: any = data.filter(d => d.hostname === routeName);
+        connsForRoute = connsForRoute && connsForRoute[0].routes.length ? connsForRoute[0].routes.length : UNKNOWN;
+        const nodeOptions = `[${helperFn.getLabelForNodeOptions(routeName, osForRoute, connsForRoute)}]`;
+        output += nodeOptions;
       }
     }
   } else {
