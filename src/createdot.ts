@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as yargs from 'yargs';
-import { mystruct, Helper, NONETWORKCONNECTIONS } from './helper';
+import { mystruct, Helper, NONETWORKCONNECTIONS, TOs } from './helper';
 import * as cliprogress from 'cli-progress';
 
 
@@ -17,10 +17,17 @@ const argv = yargs
     type: 'string',
     demand: true
   }).option('f', {
-    alias: 'Force overwrite',
+    alias: 'forceOverwrite',
     describe: 'Force Overwrite existing DOT File',
     type: 'boolean',
     demand: false,
+    default: false
+  })
+  .option('c', {
+    alias: 'colors',
+    describe: 'Enable Colors and Shapes',
+    type: 'boolean',
+    demand: 'false',
     default: false
   })
   .argv;
@@ -28,6 +35,7 @@ const argv = yargs
 const inputfile = argv.i;
 const outputfile = argv.o;
 const forceOverwrite = argv.f;
+const enableColors = argv.c;
 const helperFn = new Helper();
 const data: mystruct[] = JSON.parse(fs.readFileSync(inputfile).toString());
 const bar = new cliprogress.Bar({}, cliprogress.Presets.shades_classic);
@@ -59,6 +67,12 @@ for (let i = 0; i < data.length; i++) {
     for (let ii = 0; ii < currentHost.routes.length; ii++) {
       const routeName = currentHost.routes[ii];
       output += `"${routeName}" `;
+      if (enableColors) {
+        const shape = helperFn.getColorShape(<TOs>currentHost.os);
+        if (shape) {
+          output += `[style="filled" fillcolor="${shape.color}" fontcolor="${shape.fontcolor ? shape.fontcolor : 'white'}" shape="${shape.shape}"] `;
+        }
+      }
     }
   } else {
     output += `"${NONETWORKCONNECTIONS}" `;
